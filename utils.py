@@ -1,17 +1,14 @@
-# utils.py
-import easyocr
 import numpy as np
 from azure.storage.blob import BlobServiceClient
 import openai
 import streamlit as st
 
-# easyocrは初期化が重いためグローバルに1回だけ生成
-reader = easyocr.Reader(['ja', 'en'], gpu=False)
-
 def run_ocr(image):
     """
     easyocrで画像からテキストを抽出
     """
+    import easyocr  # ← 遅延インポート
+    reader = easyocr.Reader(['ja', 'en'], gpu=False)
     result = reader.readtext(np.array(image), detail=0)
     return "\n".join(result)
 
@@ -40,3 +37,4 @@ def save_to_blob(filename, content):
     blob_client = container_client.get_blob_client(blob=filename)
 
     blob_client.upload_blob(content.encode("utf-8"), overwrite=True)
+
