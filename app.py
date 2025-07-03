@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 from PIL import Image
 from utils import run_ocr, run_summary, save_to_blob
@@ -10,7 +9,14 @@ uploaded_file = st.file_uploader("画像をアップロードしてください"
 
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="アップロードされた画像", use_column_width=True)
+    st.image(image, caption="アップロードされた画像", use_container_width=True)
+
+    if st.button("OCR実行"):
+        st.write("🟡 OCRモデル初期化中...")  # ログその1
+        ocr_result = run_ocr(image)
+        st.write("🟢 OCR完了！")            # ログその2
+        st.subheader("OCR結果")
+        st.text(ocr_result)
 
     if st.button("OCRと要約を実行"):
         with st.spinner("🔍 OCRで文字を認識中..."):
@@ -24,4 +30,4 @@ if uploaded_file:
         with st.spinner("☁️ Azureに保存中..."):
             save_to_blob("ocr_result.txt", ocr_text)
             save_to_blob("summary_result.txt", summary)
-            st.success("Azure Blob Storage に保存しました！")
+            st.success("✅ Azure Blob Storage に保存しました！")
